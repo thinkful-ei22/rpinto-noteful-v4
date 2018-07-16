@@ -47,18 +47,27 @@ router.post('/users', (req, res, next) => {
       const err = new Error('username already exists');
       err.status = 422;
       return next(err);
-    } else {
-      User
-        .create({
-          fullname,
+    } else { //else if no validation errors, create user
+      return User.hashPassword(password)
+      .then(digest => {
+        const newUser = {
           username,
-          password
-        })
+          password: digest,
+          fullname
+        };
+        return User.create(newUser);
+      })
         .then(user => {
           return res.status(201).location(`/api/users/${user.id}`).json(user.serialize());
         })
-        .catch(err => next(err));
-    }
+        .catch(err => {
+          if (err.code === 11000) {
+            err = new Error('The username already exists');
+            err.status = 400;
+          }
+          next(err);
+        });
+    };
   });
 });
 
