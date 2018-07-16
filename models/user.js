@@ -21,4 +21,8 @@ userSchema.set('toObject', {
   }
 });
 
+userSchema.methods.validatePassword = function (password) {
+  return password === this.password;
+};
+
 module.exports = mongoose.model('User', userSchema);
