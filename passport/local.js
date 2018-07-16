@@ -35,3 +35,5 @@ const localStrategy = new LocalStrategy((username, password, done) => {
       return done(err);
     });
 });
+
+module.exports = localStrategy;

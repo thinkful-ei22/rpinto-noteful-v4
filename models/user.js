@@ -8,9 +8,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true }
 });
 
-// Add `createdAt` and `updatedAt` fields
-userSchema.set('timestamps', true);
-
 // Customize output for `res.json(data)`, `console.log(data)` etc.
 userSchema.set('toObject', {
   virtuals: true,     // include built-in virtual `id`
@@ -25,4 +22,13 @@ userSchema.methods.validatePassword = function (password) {
   return password === this.password;
 };
 
+userSchema.methods.serialize = function () {
+  return {
+    id: this._id,
+    fullname: this.fullname,
+    username: this.username
+  };
+};
+
 module.exports = mongoose.model('User', userSchema);
+
