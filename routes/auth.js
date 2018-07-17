@@ -1,17 +1,21 @@
 'use strict';
 
 const express = require('express');
-const mongoose = require('mongoose');
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
+const { JWT_SECRET, JWT_EXPIRY } = require('../config'); 
 const { Strategy: LocalStrategy } = require('passport-local');
-
-const Note = require('../models/note');
-const Folder = require('../models/folder');
-const User = require('../models/user');
 
 const router = express.Router();
 
+//return a JWT which returns user information
+function createAuthToken (user) {
+  return jwt.sign({ user }, JWT_SECRET, {
+    subject: user.username,
+    expiresIn: JWT_EXPIRY
+  });
+}
 
 //Create protected login route
 const options = {session: false, failWithError: true};
@@ -19,7 +23,8 @@ const options = {session: false, failWithError: true};
 const localAuth = passport.authenticate('local', options);
 
 router.post('/login', localAuth, function (req, res) {
-  return res.json(req.user);
+  const authToken = createAuthToken(req.user)
+  return res.json({authToken});
 });
 
 module.exports = router;

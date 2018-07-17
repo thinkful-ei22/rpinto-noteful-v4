@@ -4,7 +4,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('../models/user');
 
-
 const router = express.Router();
 
 //----validate and cleanup the values supplied for username and password----
@@ -48,7 +47,7 @@ router.post('/users', (req, res, next) => {
       });
     }
   
-    let {fullname, username, password} = req.body;
+  let {fullname, username, password} = req.body;
   
   //all fields must exist
   const requiredFields = ['fullname', 'username', 'password'];
@@ -96,8 +95,8 @@ router.post('/users', (req, res, next) => {
 
   // Username and password come in pre-trimmed, otherwise we throw an error
   // before this
-  firstName = firstName.trim();
-  lastName = lastName.trim();
+  fullname = fullname.trim();
+  
 
   //each username needs to be unique
   User.findOne({ 'username': username }).count().then(cnt => {
