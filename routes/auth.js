@@ -27,4 +27,11 @@ router.post('/login', localAuth, function (req, res) {
   return res.json({authToken});
 });
 
+//Add /refresh endpoint
+const jwtAuth = passport.authenticate('jwt', { session: false, failWithError: true });
+
+router.post('/refresh', jwtAuth, (req, res) => {
+  const authToken = createAuthToken(req.user);
+  res.json({ authToken });
+});
 module.exports = router;
