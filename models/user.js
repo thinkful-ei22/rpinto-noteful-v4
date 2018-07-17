@@ -20,9 +20,9 @@ userSchema.set('toObject', {
   }
 });
 
-userSchema.methods.validatePassword = function (password) {
-  return password === this.password;
-};
+// userSchema.methods.validatePassword = function (password) {
+//   return password === this.password;
+// };
 
 userSchema.methods.serialize = function () {
   return {
@@ -32,15 +32,15 @@ userSchema.methods.serialize = function () {
   };
 };
 
-UserSchema.methods.validatePassword = function (password) {
+userSchema.methods.validatePassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-UserSchema.statics.hashPassword = function (password) {
+userSchema.statics.hashPassword = function (password) {
   return bcrypt.hash(password, 10);
 };
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = mongoose.model('User', userSchema);
 
