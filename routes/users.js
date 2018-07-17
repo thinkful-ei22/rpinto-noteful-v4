@@ -6,6 +6,7 @@ const User = require('../models/user');
 
 const router = express.Router();
 
+
 //----validate and cleanup the values supplied for username and password----
 
 //Create User ------ POST ENDPOINT ------
