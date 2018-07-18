@@ -12,44 +12,9 @@ const router = express.Router();
 //Create User ------ POST ENDPOINT ------
 
 router.post('/users', (req, res, next) => {
-    //The username is a minimum of 1 character, The password is a minimum of 8 and max of 72 characters
-    const sizedFields = {
-      username: {
-        min: 1
-      },
-      password: {
-        min: 8,
-        // bcrypt truncates after 72 characters, so let's not give the illusion
-        // of security by storing extra (unused) info
-        max: 72
-      }
-    };
-    const tooSmallField = Object.keys(sizedFields).find(
-      field =>
-        'min' in sizedFields[field] &&
-              req.body[field].trim().length < sizedFields[field].min
-    );
-    const tooLargeField = Object.keys(sizedFields).find(
-      field =>
-        'max' in sizedFields[field] &&
-              req.body[field].trim().length > sizedFields[field].max
-    );
-  
-    if (tooSmallField || tooLargeField) {
-      return res.status(422).json({
-        code: 422,
-        reason: 'ValidationError',
-        message: tooSmallField
-          ? `Must be at least ${sizedFields[tooSmallField]
-            .min} characters long`
-          : `Must be at most ${sizedFields[tooLargeField]
-            .max} characters long`,
-        location: tooSmallField || tooLargeField
-      });
-    }
-  
-  let {fullname, username, password} = req.body;
-  
+  console.log(req.body, 'req.body')
+
+  let { fullname, username, password } = req.body;
   //all fields must exist
   const requiredFields = ['fullname', 'username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
@@ -78,7 +43,7 @@ router.post('/users', (req, res, next) => {
     });
   }
 
-  //The username and password should not have leading or trailing whitespace. 
+//The username and password should not have leading or trailing whitespace. 
   //And the endpoint should not automatically trim the values
   const explicityTrimmedFields = ['username', 'password'];
   const nonTrimmedField = explicityTrimmedFields.find(
@@ -97,7 +62,43 @@ router.post('/users', (req, res, next) => {
   // Username and password come in pre-trimmed, otherwise we throw an error
   // before this
   fullname = fullname.trim();
-  
+
+  //The username is a minimum of 1 character, The password is a minimum of 8 and max of 72 characters
+  const sizedFields = {
+    username: {
+      min: 1
+    },
+    password: {
+      min: 8,
+      // bcrypt truncates after 72 characters, so let's not give the illusion
+      // of security by storing extra (unused) info
+      max: 72
+    }
+  };
+  const tooSmallField = Object.keys(sizedFields).find(
+    field =>
+      'min' in sizedFields[field] &&
+      req.body[field].trim().length < sizedFields[field].min
+  );
+  console.log(tooSmallField, "too small field")
+  const tooLargeField = Object.keys(sizedFields).find(
+    field =>
+      'max' in sizedFields[field] &&
+      req.body[field].trim().length > sizedFields[field].max
+  );
+
+  if (tooSmallField || tooLargeField) {
+    return res.status(422).json({
+      code: 422,
+      reason: 'ValidationError',
+      message: tooSmallField
+        ? `Must be at least ${sizedFields[tooSmallField]
+          .min} characters long`
+        : `Must be at most ${sizedFields[tooLargeField]
+          .max} characters long`,
+      location: tooSmallField || tooLargeField
+    });
+  }
 
   //each username needs to be unique
   User.findOne({ 'username': username }).count().then(cnt => {
@@ -107,14 +108,14 @@ router.post('/users', (req, res, next) => {
       return next(err);
     } else { //else if no validation errors, create user
       return User.hashPassword(password)
-      .then(digest => {
-        const newUser = {
-          username,
-          password: digest,
-          fullname
-        };
-        return User.create(newUser);
-      })
+        .then(digest => {
+          const newUser = {
+            username,
+            password: digest,
+            fullname
+          };
+          return User.create(newUser);
+        })
         .then(user => {
           return res.status(201).location(`/api/users/${user.id}`).json(user.serialize());
         })
