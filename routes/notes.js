@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const Note = require('../models/note');
-
+const Tag = require('../models/tag')
 const router = express.Router();
 router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
   const { searchTerm, folderId, tagId } = req.query;
   const userId = req.user.id;
 
-  let filter = {userId};
+  let filter = { userId };
 
   if (searchTerm) {
     const re = new RegExp(searchTerm, 'i');
@@ -93,6 +93,27 @@ router.post('/', (req, res, next) => {
     });
   }
 
+  
+  if (!Array.isArray(tags)) {
+    const err = new Error('The `tags` property must be an array');
+    err.status = 400
+    return next(err);
+  }
+
+  //verify all the tags belong to the current user
+  Tag.find({ userId })
+    .then(results => {
+      const resultsIds = results.map(result => result.id)
+      tags.forEach(tag => {
+        if (!resultsIds.includes(tag)) {
+          const err = new Error('The `tags` array contains an invalid id');
+          err.status = 400
+          return next(err)
+        }
+      })
+    });
+
+
   const newNote = { title, content, folderId, tags, userId };
 
   Note.create(newNote)
@@ -141,6 +162,25 @@ router.put('/:id', (req, res, next) => {
     }
   }
 
+  if (!Array.isArray(tags)) {
+    const err = new Error('The `tags` property must be an array');
+    err.status = 400
+    return next(err);
+  }
+
+  //verify all the tags belong to the current user
+  Tag.find({ userId })
+    .then(results => {
+      const resultsIds = results.map(result => result.id)
+      tags.forEach(tag => {
+        if (!resultsIds.includes(tag)) {
+          const err = new Error('The `tags` array contains an invalid id');
+          err.status = 400
+          return next(err)
+        }
+      })
+    });
+    
   const updateNote = { title, content, folderId, tags };
 
   Note.findOneAndUpdate({ _id: id, userId }, updateNote, { new: true })
