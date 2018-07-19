@@ -18,7 +18,7 @@ const expect = chai.expect;
 
 describe.skip('Noteful API - Folders', function () {
 
-  let token; 
+  let token;
   let user;
 
   before(function () {
@@ -28,7 +28,7 @@ describe.skip('Noteful API - Folders', function () {
 
   //Insert the users and folders into the database. 
   //Then capture the users and extract the first user and create a valid JWT.
-  
+
   beforeEach(function () {
     return Promise.all([
       User.insertMany(seedUsers),
@@ -61,7 +61,7 @@ describe.skip('Noteful API - Folders', function () {
         .then(_data => {
           data = _data;
           return chai.request(app).get(`/api/folders/${data.id}`)
-          .set('Authorization', `Bearer ${token}`);
+            .set('Authorization', `Bearer ${token}`);
         })
         .then((res) => {
           expect(res).to.have.status(200);
@@ -161,9 +161,9 @@ describe.skip('Noteful API - Folders', function () {
         .then(_data => {
           data = _data;
           return chai.request(app)
-          .put(`/api/folders/${data.id}`)
-          .set('Authorization', `Bearer ${token}`)   
-          .send(updateItem);
+            .put(`/api/folders/${data.id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(updateItem);
         })
         .then(function (res) {
           expect(res).to.have.status(200);

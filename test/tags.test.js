@@ -17,9 +17,9 @@ const { TEST_MONGODB_URI, JWT_SECRET } = require('../config');
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe.only('Noteful API - Tags', function () {
+describe.skip('Noteful API - Tags', function () {
 
-  let token; 
+  let token;
   let user;
 
   before(function () {
@@ -32,14 +32,14 @@ describe.only('Noteful API - Tags', function () {
       User.insertMany(seedUsers),
       Tag.insertMany(seedTags),
     ])
-    .then(([users]) => {
-      Tag.createIndexes();
-      return [users];
-    })
-    .then(([users]) => {
-      user = users[0];
-      token = jwt.sign({ user }, JWT_SECRET, { subject: user.username });
-    });   
+      .then(([users]) => {
+        Tag.createIndexes();
+        return [users];
+      })
+      .then(([users]) => {
+        user = users[0];
+        token = jwt.sign({ user }, JWT_SECRET, { subject: user.username });
+      });
   });
 
   afterEach(function () {
@@ -56,8 +56,8 @@ describe.only('Noteful API - Tags', function () {
       return Promise.all([
         Tag.find({ userId: user.id }),
         chai.request(app)
-        .get('/api/tags')
-        .set('Authorization', `Bearer ${token}`)
+          .get('/api/tags')
+          .set('Authorization', `Bearer ${token}`)
       ])
         .then(([data, res]) => {
           expect(res).to.have.status(200);
@@ -71,8 +71,8 @@ describe.only('Noteful API - Tags', function () {
       return Promise.all([
         Tag.find({ userId: user.id }).sort('name'),
         chai.request(app)
-        .get('/api/tags')
-        .set('Authorization', `Bearer ${token}`).send(updateItem)
+          .get('/api/tags')
+          .set('Authorization', `Bearer ${token}`).send(updateItem)
       ])
         .then(([data, res]) => {
           expect(res).to.have.status(200);
@@ -101,8 +101,8 @@ describe.only('Noteful API - Tags', function () {
         .then(_data => {
           data = _data;
           return chai.request(app)
-          .get(`/api/tags/${data.id}`)
-          .set('Authorization', `Bearer ${token}`)
+            .get(`/api/tags/${data.id}`)
+            .set('Authorization', `Bearer ${token}`)
         })
         .then((res) => {
           expect(res).to.have.status(200);
