@@ -17,7 +17,7 @@ const { TEST_MONGODB_URI, JWT_SECRET } = require('../config');
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe.skip('Noteful API - Tags', function () {
+describe('Noteful API - Tags', function () {
 
   let token;
   let user;
@@ -68,11 +68,13 @@ describe.skip('Noteful API - Tags', function () {
     });
 
     it('should return a list with the correct fields and values', function () {
+      
       return Promise.all([
         Tag.find({ userId: user.id }).sort('name'),
         chai.request(app)
           .get('/api/tags')
-          .set('Authorization', `Bearer ${token}`).send(updateItem)
+          .set('Authorization', `Bearer ${token}`)
+          
       ])
         .then(([data, res]) => {
           expect(res).to.have.status(200);
@@ -81,7 +83,7 @@ describe.skip('Noteful API - Tags', function () {
           expect(res.body).to.have.length(data.length);
           res.body.forEach(function (item, i) {
             expect(item).to.be.a('object');
-            expect(item).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId');
+            expect(item).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId')
             expect(item.id).to.equal(data[i].id);
             expect(item.name).to.equal(data[i].name);
 
@@ -108,7 +110,7 @@ describe.skip('Noteful API - Tags', function () {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.an('object');
-          expect(res.body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId');
+          expect(res.body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId')
           expect(res.body.id).to.equal(data.id);
           expect(res.body.name).to.equal(data.name);
           expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
@@ -153,7 +155,7 @@ describe.skip('Noteful API - Tags', function () {
           expect(res).to.have.header('location');
           expect(res).to.be.json;
           expect(body).to.be.a('object');
-          expect(body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId');
+          expect(body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId')
           return Tag.findById(body.id);
         })
         .then(data => {
@@ -215,7 +217,7 @@ describe.skip('Noteful API - Tags', function () {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
-          expect(res.body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId');
+          expect(res.body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId')
           expect(res.body.id).to.equal(data.id);
           expect(res.body.name).to.equal(updateItem.name);
           expect(new Date(res.body.createdAt)).to.eql(data.createdAt);

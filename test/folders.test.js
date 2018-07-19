@@ -140,7 +140,10 @@ describe.skip('Noteful API - Folders', function () {
       return Folder.findOne()
         .then(data => {
           const newItem = { name: data.name };
-          return chai.request(app).post('/api/folders').send(newItem);
+          return chai.request(app)
+          .post('/api/folders')
+          .set('Authorization', `Bearer ${token}`)
+          .send(newItem);
         })
         .then(res => {
           expect(res).to.have.status(400);
@@ -169,7 +172,7 @@ describe.skip('Noteful API - Folders', function () {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
-          expect(res.body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt');
+          expect(res.body).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt', 'userId');
           expect(res.body.id).to.equal(data.id);
           expect(res.body.name).to.equal(updateItem.name);
           expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
