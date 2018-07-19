@@ -4,16 +4,22 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 
 const app = require('../server');
 const Tag = require('../models/tag');
+const seedFolders = require('../db/seed/folders');
+const seedUsers = require('../db/seed/users');
 const seedTags = require('../db/seed/tags');
 const { TEST_MONGODB_URI } = require('../config');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe('Noteful API - Tags', function () {
+describe.skip('Noteful API - Tags', function () {
+
+  let token; 
+  let user;
 
   before(function () {
     return mongoose.connect(TEST_MONGODB_URI)
@@ -41,6 +47,7 @@ describe('Noteful API - Tags', function () {
       return Promise.all([
         Tag.find(),
         chai.request(app).get('/api/tags')
+        .set('Authorization', `Bearer ${token}`)
       ])
         .then(([data, res]) => {
           expect(res).to.have.status(200);
@@ -81,7 +88,8 @@ describe('Noteful API - Tags', function () {
       return Tag.findOne()
         .then(_data => {
           data = _data;
-          return chai.request(app).get(`/api/tags/${data.id}`);
+          return chai.request(app).get(`/api/tags/${data.id}`)
+          .set('Authorization', `Bearer ${token}`)
         })
         .then((res) => {
           expect(res).to.have.status(200);
@@ -98,6 +106,7 @@ describe('Noteful API - Tags', function () {
     it('should respond with a 400 for an invalid id', function () {
       return chai.request(app)
         .get('/api/tags/NOT-A-VALID-ID')
+        .set('Authorization', `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(400);
           expect(res.body.message).to.equal('The `id` is not valid');
@@ -108,6 +117,7 @@ describe('Noteful API - Tags', function () {
       // The string "DOESNOTEXIST" is 12 bytes which is a valid Mongo ObjectId
       return chai.request(app)
         .get('/api/tags/DOESNOTEXIST')
+        .set('Authorization', `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(404);
         });
