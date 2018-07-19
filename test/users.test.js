@@ -11,10 +11,10 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe.only('Noteful API - Users', function () {
+describe.skip('Noteful API - Users', function () {
   const username = 'exampleUser';
   const password = 'examplePass';
-  const fullname = 'Example User';
+  const fullname = 'exampleUser';
 
   before(function () {
     return mongoose.connect(TEST_MONGODB_URI)
@@ -208,28 +208,11 @@ describe.only('Noteful API - Users', function () {
           .send(testUser)
           .then(res => {
             expect(res).to.have.status(201);
-            expect(res.body.reason).to.equal(`ValidationError`);
-            expect(res.body.message).to.equal('Cannot start or end with whitespace')
-            expect(res.body.location).to.equal('fullname');
+            expect(res.body).to.be.an('object');
+            expect(res.body.message).to.equal('Validation Error');
+            expect(res.body.fullname).to.equal('bobuser');
           })
       })
-
-      //In "should trim fullname", we get a 201 or a 422?
-
-
-       /**
-        * COMPLETE ALL THE FOLLOWING TESTS
-        */
-      // it('Should reject users with missing password');
-      // it('Should reject users with non-string username');
-      // it('Should reject users with non-string password');
-      // it('Should reject users with non-trimmed username');
-      // it('Should reject users with non-trimmed password');
-      // it('Should reject users with empty username');
-      // it('Should reject users with password less than 8 characters');
-      // it('Should reject users with password greater than 72 characters');
-      // it('Should reject users with duplicate username');
-      // it('Should trim fullname');
     });
   });
 });
