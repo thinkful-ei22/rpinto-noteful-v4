@@ -99,7 +99,16 @@ router.put('/:id', (req, res, next) => {
 
   const updateFolder = { name };
 
-  Folder.findByIdAndUpdate({ _id: id, userId }, updateFolder, { new: true })
+  Folder.find({name, userId})
+    .then(res =>{
+      
+      if(res.length > 0){
+        const err = new Error('Folder name already exists');
+        err.status = 400;
+        return next(err);
+      }   
+      return Folder.findByIdAndUpdate({ _id: id, userId }, updateFolder, { new: true });
+    })
     .then(result => {
       if (result) {
         res.json(result);

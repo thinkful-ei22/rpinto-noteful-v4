@@ -16,7 +16,7 @@ const { TEST_MONGODB_URI, JWT_SECRET, JWT_EXPIRY } = require('../config');
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe.skip('Noteful API - Folders', function () {
+describe('Noteful API - Folders', function () {
 
   let token;
   let user;
@@ -169,6 +169,7 @@ describe.skip('Noteful API - Folders', function () {
             .send(updateItem);
         })
         .then(function (res) {
+          
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
@@ -229,13 +230,16 @@ describe.skip('Noteful API - Folders', function () {
       return Folder.find().limit(2)
         .then(results => {
           const [item1, item2] = results;
-          item1.name = item2.name;
+          
+          //item1.name = item2.name;
+       
           return chai.request(app)
-            .put(`/api/folders/${item1.id}`)
-            .set('Authorization', `Bearer ${token}`)
-            .send(item1);
+            .put(`/api/folders/${item2.id}`)
+            .send({ name:item1.name })
+            .set('Authorization', `Bearer ${token}`);
         })
         .then(res => {
+         
           expect(res).to.have.status(400);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');

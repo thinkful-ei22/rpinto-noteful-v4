@@ -10,7 +10,7 @@ router.use('/', passport.authenticate('jwt', { session: false, failWithError: tr
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
-  console.log(req.user);
+  
   const { searchTerm, folderId, tagId } = req.query;
   const userId = req.user.id;
 

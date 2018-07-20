@@ -22,7 +22,7 @@ const seedUsers = require('../db/seed/users');
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe.only('Noteful API - Notes', function () {
+describe('Noteful API - Notes', function () {
 
   let token;
   let user;
@@ -64,10 +64,10 @@ describe.only('Noteful API - Notes', function () {
   });
 
   describe('GET /api/notes', function () {
-
+    
     it('should return the correct number of Notes', function () {
       return Promise.all([
-        Note.find(),
+        Note.find({ userId: user.id }),
         chai.request(app)
           .get('/api/notes')
           .set('Authorization', `Bearer ${token}`)
@@ -108,15 +108,15 @@ describe.only('Noteful API - Notes', function () {
     });
 
     it('should return correct search results for a searchTerm query', function () {
-      const searchTerm = 'gaga';
+      const searchTerm = 'life';
       // const re = new RegExp(searchTerm, 'i');
       const dbPromise = Note.find({
-        title: { $regex: searchTerm, $options: 'i' }
+        title: { $regex: searchTerm, $options: 'i'}, userId: user.id 
         // $or: [{ title: re }, { content: re }]
       });
       const apiPromise = chai.request(app)
         .get(`/api/notes?searchTerm=${searchTerm}`)
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${token}`);
 
       return Promise.all([dbPromise, apiPromise])
         .then(([data, res]) => {
@@ -138,18 +138,20 @@ describe.only('Noteful API - Notes', function () {
 
     it('should return correct search results for a folderId query', function () {
       let data;
+      
       return Folder.findOne({ userId: user.id })
         .then((_data) => {
           data = _data;
           return Promise.all([
             Note
-              .find({ folderId: data.id }),
+              .find({ folderId: data.id, userId: user.id }),
             chai.request(app)
               .get(`/api/notes?folderId=${data.id}`)
               .set('Authorization', `Bearer ${token}`),
-          ]);
+          ])
         })
         .then(([data, res]) => {
+          
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('array');
@@ -163,7 +165,7 @@ describe.only('Noteful API - Notes', function () {
         .then((_data) => {
           data = _data;
           return Promise.all([
-            Note.find({ tags: data.id }),
+            Note.find({ tags: data.id, userId: user.id }),
             chai.request(app)
               .get(`/api/notes?tagId=${data.id}`)
               .set('Authorization', `Bearer ${token}`)

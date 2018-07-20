@@ -12,7 +12,7 @@ const router = express.Router();
 //Create User ------ POST ENDPOINT ------
 
 router.post('/users', (req, res, next) => {
-  console.log(req.body, 'req.body')
+  
 
   let { fullname, username, password } = req.body;
   //all fields must exist
@@ -80,7 +80,7 @@ router.post('/users', (req, res, next) => {
       'min' in sizedFields[field] &&
       req.body[field].trim().length < sizedFields[field].min
   );
-  console.log(tooSmallField, "too small field")
+  
   const tooLargeField = Object.keys(sizedFields).find(
     field =>
       'max' in sizedFields[field] &&

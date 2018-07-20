@@ -11,7 +11,7 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe.skip('Noteful API - Users', function () {
+describe('Noteful API - Users', function () {
   const username = 'exampleUser';
   const password = 'examplePass';
   const fullname = 'exampleUser';
@@ -72,7 +72,7 @@ describe.skip('Noteful API - Users', function () {
           .post('/api/users')
           .send(testUser)
           .then(res => {
-            console.log(res.status, 'this is res.status')
+           
             expect(res).to.have.status(422);
             expect(res.body.message).to.equal(`Missing field`);
           })
@@ -209,7 +209,6 @@ describe.skip('Noteful API - Users', function () {
           .then(res => {
             expect(res).to.have.status(201);
             expect(res.body).to.be.an('object');
-            expect(res.body.message).to.equal('Validation Error');
             expect(res.body.fullname).to.equal('bobuser');
           })
       })
